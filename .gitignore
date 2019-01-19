@@ -1,4 +1,13 @@
-# Created by .ignore support plugin (hsz.mobi)
+
+### Project
+
+dist/
+
+### Reason
+.merlin
+lib/
+*.bs.js
+
 ### macOS template
 # General
 .DS_Store
