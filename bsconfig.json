@@ -1,21 +1,20 @@
 {
-  "name": "my-new-project",
-  "version": "0.1.0",
+  "name": "react-template",
+  "reason": {
+    "react-jsx": 2
+  },
   "sources": {
     "dir" : "src",
     "subdirs" : true
   },
-  "package-specs": {
+  "package-specs": [{
     "module": "commonjs",
     "in-source": true
-  },
+  }],
   "suffix": ".bs.js",
-  "bs-dependencies": [
-
-  ],
-  "warnings": {
-    "error" : "+101"
-  },
   "namespace": true,
+  "bs-dependencies": [
+    "reason-react"
+  ],
   "refmt": 3
 }
