@@ -20,7 +20,7 @@ type action =
   | CreateList
   | DeleteTodo
   | DeleteList
-  | SelectList;
+  | SelectList(int);
 
 let component = ReasonReact.reducerComponent("Main");
 
@@ -64,7 +64,10 @@ let make = _children => {
       };
     | DeleteTodo => ReasonReact.Update({...state, newTodoText: "a"})
     | DeleteList => ReasonReact.Update({...state, newTodoText: "a"})
-    | SelectList => ReasonReact.Update({...state, newTodoText: "a"})
+    | SelectList(id) =>
+      let selectedList =
+        Some(state.todoLists |> Js.Array.findIndex(item => item.id == id));
+      ReasonReact.Update({...state, selectedList});
     },
   render: self =>
     <section className="container">
@@ -82,7 +85,11 @@ let make = _children => {
             {ReasonReact.array(
                self.state.todoLists
                |> Js.Array.map(item =>
-                    <li key={string_of_int(item.id)}> {rstr(item.name)} </li>
+                    <li
+                      onClick={_event => self.send(SelectList(item.id))}
+                      key={string_of_int(item.id)}>
+                      {rstr(item.name)}
+                    </li>
                   ),
              )}
           </ul>
