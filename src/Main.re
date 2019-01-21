@@ -2,14 +2,14 @@ type todo = {message: string};
 
 type todoList = {
   name: string,
-  todos: list(todo),
+  todos: array(todo),
 };
 
 type state = {
   newTodoText: string,
   newListText: string,
   selectedList: option(int),
-  todoLists: list(todoList),
+  todoLists: array(todoList),
 };
 
 type action =
@@ -28,7 +28,7 @@ let rstr = s => ReasonReact.string(s);
 let make = _children => {
   ...component,
   initialState: () => {
-    todoLists: [],
+    todoLists: [||],
     newTodoText: "",
     newListText: "",
     selectedList: None,
@@ -59,9 +59,9 @@ let make = _children => {
         </section>
         {switch (self.state.selectedList) {
          | None => ReasonReact.null
-         | Some(_listIndex) =>
+         | Some(listIndex) =>
            <section className="right-column">
-             <h2> {rstr("Todos")} </h2>
+             <h2> {rstr(self.state.todoLists[listIndex].name)} </h2>
              <SimpleInputForm
                onInput={_event => self.send(UpdateNewTodoText("a"))}
                onSubmit={_event => self.send(CreateTodo)}
