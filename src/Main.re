@@ -1,6 +1,7 @@
 type todo = {message: string};
 
 type todoList = {
+  id: int,
   name: string,
   todos: array(todo),
 };
@@ -25,6 +26,14 @@ let component = ReasonReact.reducerComponent("Main");
 
 let rstr = s => ReasonReact.string(s);
 
+let currentId = ref(0);
+
+let genId = () => {
+  let id = currentId^;
+  currentId := currentId^ + 1;
+  id;
+};
+
 let make = _children => {
   ...component,
   initialState: () => {
@@ -41,13 +50,18 @@ let make = _children => {
       ReasonReact.Update({...state, newTodoText: text})
     | CreateTodo => ReasonReact.Update({...state, newTodoText: "a"})
     | CreateList =>
-      let newList = {name: state.newListText, todos: [||]};
-      ignore(Js.Array.push(newList, state.todoLists));
-      ReasonReact.Update({
-        ...state,
-        todoLists: state.todoLists,
-        newListText: "",
-      });
+      let trimmed = Js.String.trim(state.newListText);
+      if (trimmed != "") {
+        let newList = {id: genId(), name: state.newListText, todos: [||]};
+        ignore(Js.Array.push(newList, state.todoLists));
+        ReasonReact.Update({
+          ...state,
+          todoLists: state.todoLists,
+          newListText: "",
+        });
+      } else {
+        ReasonReact.NoUpdate;
+      };
     | DeleteTodo => ReasonReact.Update({...state, newTodoText: "a"})
     | DeleteList => ReasonReact.Update({...state, newTodoText: "a"})
     | SelectList => ReasonReact.Update({...state, newTodoText: "a"})
@@ -64,6 +78,14 @@ let make = _children => {
             value={self.state.newListText}
             buttonText={rstr("Create List")}
           />
+          <ul>
+            {ReasonReact.array(
+               self.state.todoLists
+               |> Js.Array.map(item =>
+                    <li key={string_of_int(item.id)}> {rstr(item.name)} </li>
+                  ),
+             )}
+          </ul>
         </section>
         {switch (self.state.selectedList) {
          | None => ReasonReact.null
