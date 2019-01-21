@@ -1,10 +1,15 @@
 type todo = {message: string};
 
+type todoList = {
+  name: string,
+  todos: list(todo),
+};
+
 type state = {
   newTodoText: string,
   newListText: string,
   selectedList: option(int),
-  todoLists: list(todo),
+  todoLists: list(todoList),
 };
 
 type action =
