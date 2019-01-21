@@ -79,8 +79,8 @@ let make = _children => {
       } else {
         ReasonReact.NoUpdate;
       };
-    | DeleteTodo => ReasonReact.Update({...state, newTodoText: "a"})
-    | DeleteList => ReasonReact.Update({...state, newTodoText: "a"})
+    | DeleteTodo => ReasonReact.NoUpdate
+    | DeleteList => ReasonReact.NoUpdate
     | SelectList(id) =>
       let selectedList =
         Some(state.todoLists |> Js.Array.findIndex(item => item.id == id));
