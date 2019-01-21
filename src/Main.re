@@ -52,8 +52,8 @@ let make = _children => {
         <section className="left-column">
           <h2> {rstr("Lists")} </h2>
           <SimpleInputForm
-            onInput={_event => self.send(UpdateNewListText("a"))}
-            onSubmit={_event => self.send(CreateList)}
+            onChange={value => self.send(UpdateNewListText(value))}
+            onSubmit={() => self.send(CreateList)}
             buttonText={rstr("Create List")}
           />
         </section>
@@ -63,8 +63,8 @@ let make = _children => {
            <section className="right-column">
              <h2> {rstr(self.state.todoLists[listIndex].name)} </h2>
              <SimpleInputForm
-               onInput={_event => self.send(UpdateNewTodoText("a"))}
-               onSubmit={_event => self.send(CreateTodo)}
+               onChange={value => self.send(UpdateNewTodoText(value))}
+               onSubmit={() => self.send(CreateTodo)}
                buttonText={rstr("Create Todo")}
              />
            </section>
