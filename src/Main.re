@@ -3,7 +3,7 @@ type todo = {
   message: string,
 };
 
-type todoList = {
+type todo_list = {
   id: int,
   name: string,
   todos: array(todo),
@@ -13,7 +13,7 @@ type state = {
   newTodoText: string,
   newListText: string,
   selectedList: option(int),
-  todoLists: array(todoList),
+  todoLists: array(todo_list),
 };
 
 type action =
@@ -98,18 +98,15 @@ let make = _children => {
             value={self.state.newListText}
             buttonText={rstr("Create List")}
           />
-          <ul>
-            {ReasonReact.array(
-               self.state.todoLists
-               |> Js.Array.map(item =>
-                    <li
-                      onClick={_event => self.send(SelectList(item.id))}
-                      key={string_of_int(item.id)}>
-                      {rstr(item.name)}
-                    </li>
-                  ),
-             )}
-          </ul>
+          <SimpleList
+            onClick={id => self.send(SelectList(id))}
+            items={
+              self.state.todoLists
+              |> Js.Array.map((todo: todo_list) =>
+                   ({id: todo.id, text: todo.name}: SimpleList.list_item)
+                 )
+            }
+          />
         </section>
         {switch (self.state.selectedList) {
          | None => ReasonReact.null
@@ -124,16 +121,16 @@ let make = _children => {
                value={self.state.newTodoText}
                buttonText={rstr("Create Todo")}
              />
-             <ul>
-               {ReasonReact.array(
-                  selectedList.todos
-                  |> Js.Array.map((item: todo) =>
-                       <li key={string_of_int(item.id)}>
-                         {rstr(item.message)}
-                       </li>
-                     ),
-                )}
-             </ul>
+             <SimpleList
+               items={
+                 selectedList.todos
+                 |> Js.Array.map((todo: todo) =>
+                      (
+                        {id: todo.id, text: todo.message}: SimpleList.list_item
+                      )
+                    )
+               }
+             />
            </section>;
          }}
       </section>
