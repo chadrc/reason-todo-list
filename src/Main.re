@@ -1,4 +1,7 @@
-type todo = {message: string};
+type todo = {
+  id: int,
+  message: string,
+};
 
 type todoList = {
   id: int,
@@ -48,7 +51,21 @@ let make = _children => {
       ReasonReact.Update({...state, newListText: text})
     | UpdateNewTodoText(text) =>
       ReasonReact.Update({...state, newTodoText: text})
-    | CreateTodo => ReasonReact.Update({...state, newTodoText: "a"})
+    | CreateTodo =>
+      switch (state.selectedList) {
+      | None => ReasonReact.NoUpdate
+      | Some(listIndex) =>
+        let selectedList = state.todoLists[listIndex];
+        ignore(
+          selectedList.todos
+          |> Js.Array.push({id: genId(), message: state.newTodoText}),
+        );
+        ReasonReact.Update({
+          ...state,
+          todoLists: state.todoLists,
+          newTodoText: "",
+        });
+      }
     | CreateList =>
       let trimmed = Js.String.trim(state.newListText);
       if (trimmed != "") {
@@ -97,15 +114,27 @@ let make = _children => {
         {switch (self.state.selectedList) {
          | None => ReasonReact.null
          | Some(listIndex) =>
+           let selectedList = self.state.todoLists[listIndex];
+
            <section className="right-column">
-             <h2> {rstr(self.state.todoLists[listIndex].name)} </h2>
+             <h2> {rstr(selectedList.name)} </h2>
              <SimpleInputForm
                onChange={value => self.send(UpdateNewTodoText(value))}
                onSubmit={() => self.send(CreateTodo)}
                value={self.state.newTodoText}
                buttonText={rstr("Create Todo")}
              />
-           </section>
+             <ul>
+               {ReasonReact.array(
+                  selectedList.todos
+                  |> Js.Array.map((item: todo) =>
+                       <li key={string_of_int(item.id)}>
+                         {rstr(item.message)}
+                       </li>
+                     ),
+                )}
+             </ul>
+           </section>;
          }}
       </section>
     </section>,
