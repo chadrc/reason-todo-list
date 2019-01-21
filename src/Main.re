@@ -40,7 +40,14 @@ let make = _children => {
     | UpdateNewTodoText(text) =>
       ReasonReact.Update({...state, newTodoText: text})
     | CreateTodo => ReasonReact.Update({...state, newTodoText: "a"})
-    | CreateList => ReasonReact.Update({...state, newTodoText: "a"})
+    | CreateList =>
+      let newList = {name: state.newListText, todos: [||]};
+      ignore(Js.Array.push(newList, state.todoLists));
+      ReasonReact.Update({
+        ...state,
+        todoLists: state.todoLists,
+        newListText: "",
+      });
     | DeleteTodo => ReasonReact.Update({...state, newTodoText: "a"})
     | DeleteList => ReasonReact.Update({...state, newTodoText: "a"})
     | SelectList => ReasonReact.Update({...state, newTodoText: "a"})
@@ -54,6 +61,7 @@ let make = _children => {
           <SimpleInputForm
             onChange={value => self.send(UpdateNewListText(value))}
             onSubmit={() => self.send(CreateList)}
+            value={self.state.newListText}
             buttonText={rstr("Create List")}
           />
         </section>
@@ -65,6 +73,7 @@ let make = _children => {
              <SimpleInputForm
                onChange={value => self.send(UpdateNewTodoText(value))}
                onSubmit={() => self.send(CreateTodo)}
+               value={self.state.newTodoText}
                buttonText={rstr("Create Todo")}
              />
            </section>
