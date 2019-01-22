@@ -84,30 +84,18 @@ let make = _children => {
       | None => ReasonReact.NoUpdate
       | Some(listIndex) =>
         let selectedList = state.todoLists[listIndex];
-        let deleteIndex =
+        (
           selectedList.todos
-          |> Js.Array.findIndex((todo: todo) => todo.id == id);
-        ignore(
-          Js.Array.spliceInPlace(
-            ~pos=deleteIndex,
-            ~remove=1,
-            ~add=[||],
-            selectedList.todos,
-          ),
-        );
+          |> Js.Array.findIndex((todo: todo) => todo.id == id)
+        )
+        ->Utils.removeIndex(selectedList.todos);
+
         ReasonReact.Update({...state, todoLists: state.todoLists});
       }
     | DeleteList(id) =>
-      let deleteIndex =
-        state.todoLists |> Js.Array.findIndex(item => item.id == id);
-      ignore(
-        Js.Array.spliceInPlace(
-          ~pos=deleteIndex,
-          ~remove=1,
-          ~add=[||],
-          state.todoLists,
-        ),
-      );
+      (state.todoLists |> Js.Array.findIndex(item => item.id == id))
+      ->Utils.removeIndex(state.todoLists);
+
       ReasonReact.Update({...state, todoLists: state.todoLists});
     | SelectList(id) =>
       let selectedList =
