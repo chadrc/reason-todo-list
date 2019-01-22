@@ -21,8 +21,8 @@ type action =
   | UpdateNewListText(string)
   | CreateTodo
   | CreateList
-  | DeleteTodo
-  | DeleteList
+  | DeleteTodo(int)
+  | DeleteList(int)
   | SelectList(int);
 
 let component = ReasonReact.reducerComponent("Main");
@@ -79,8 +79,36 @@ let make = _children => {
       } else {
         ReasonReact.NoUpdate;
       };
-    | DeleteTodo => ReasonReact.NoUpdate
-    | DeleteList => ReasonReact.NoUpdate
+    | DeleteTodo(id) =>
+      switch (state.selectedList) {
+      | None => ReasonReact.NoUpdate
+      | Some(listIndex) =>
+        let selectedList = state.todoLists[listIndex];
+        let deleteIndex =
+          selectedList.todos
+          |> Js.Array.findIndex((todo: todo) => todo.id == id);
+        ignore(
+          Js.Array.spliceInPlace(
+            ~pos=deleteIndex,
+            ~remove=1,
+            ~add=[||],
+            selectedList.todos,
+          ),
+        );
+        ReasonReact.Update({...state, todoLists: state.todoLists});
+      }
+    | DeleteList(id) =>
+      let deleteIndex =
+        state.todoLists |> Js.Array.findIndex(item => item.id == id);
+      ignore(
+        Js.Array.spliceInPlace(
+          ~pos=deleteIndex,
+          ~remove=1,
+          ~add=[||],
+          state.todoLists,
+        ),
+      );
+      ReasonReact.Update({...state, todoLists: state.todoLists});
     | SelectList(id) =>
       let selectedList =
         Some(state.todoLists |> Js.Array.findIndex(item => item.id == id));
@@ -99,6 +127,7 @@ let make = _children => {
             buttonText={rstr("Create List")}
           />
           <SimpleList
+            onDeleteClick={id => self.send(DeleteList(id))}
             onClick={id => self.send(SelectList(id))}
             items={
               self.state.todoLists
@@ -112,7 +141,6 @@ let make = _children => {
          | None => ReasonReact.null
          | Some(listIndex) =>
            let selectedList = self.state.todoLists[listIndex];
-
            <section className="right-column">
              <h2> {rstr(selectedList.name)} </h2>
              <SimpleInputForm
@@ -122,6 +150,8 @@ let make = _children => {
                buttonText={rstr("Create Todo")}
              />
              <SimpleList
+               onDeleteClick={id => self.send(DeleteTodo(id))}
+               onClick={id => Js.log("selected item " ++ string_of_int(id))}
                items={
                  selectedList.todos
                  |> Js.Array.map((todo: todo) =>
