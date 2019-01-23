@@ -9,7 +9,7 @@
     "build": "parcel build src/index.html",
     "bsb:build": "bsb -make-world",
     "watch": "parcel watch src/index.html",
-    "clean": "echo `rm -r dist/ lib/ ./*/*.bs.js &>/dev/null`"
+    "clean": "echo `rm -r dist/ lib/ ./src/*.bs.js ./src/*/*.bs.js &>/dev/null`"
   },
   "author": "",
   "license": "ISC",
